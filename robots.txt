@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://xyslion.github.io/sitemap.xml

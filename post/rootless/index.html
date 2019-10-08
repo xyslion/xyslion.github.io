@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Mac OS的Rootless机制 - xyslion的笔记屋</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="xyslion" /><meta name="description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.58.3 with theme even" />
+
+
+<link rel="canonical" href="https://xyslion.github.io/post/rootless/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Mac OS的Rootless机制" />
+<meta property="og:description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xyslion.github.io/post/rootless/" />
+<meta property="article:published_time" content="2019-07-22T10:14:43+08:00" />
+<meta property="article:modified_time" content="2019-07-22T10:14:43+08:00" />
+<meta itemprop="name" content="Mac OS的Rootless机制">
+<meta itemprop="description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo">
+
+
+<meta itemprop="datePublished" content="2019-07-22T10:14:43&#43;08:00" />
+<meta itemprop="dateModified" content="2019-07-22T10:14:43&#43;08:00" />
+<meta itemprop="wordCount" content="499">
+
+
+
+<meta itemprop="keywords" content="mac," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Mac OS的Rootless机制"/>
+<meta name="twitter:description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">xyslion</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">档案</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">xyslion</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">档案</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Mac OS的Rootless机制</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-07-22 </span>
+        <div class="post-category">
+            <a href="/categories/mac/"> mac </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#mac-os的rootless机制">Mac OS的Rootless机制</a>
+<ul>
+<li><a href="#附录">附录:</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="mac-os的rootless机制">Mac OS的Rootless机制</h2>
+
+<p>Mac 系统自动更新了<code>OS X 10.14.5</code>后, <code>/bin</code>和<code>/usr/bin</code>目录的文件使用<code>sudo</code>也出现权限问题:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ sudo mv /bin/bash /bin/bash.origin
+mv: rename /bin/bash to /bin/bash.origin: Operation not permitted</code></pre></td></tr></table>
+</div>
+</div>
+<p>搜索之后, <a href="https://www.jianshu.com/p/22b89f19afd6">midmirror的简书</a>里说, 是<code>El Capitan</code>加入了<code>Rootless机制</code>, 不再能够随心所欲的读写很多路径下了.即使使用<code>sudo</code>也不行.</p>
+
+<blockquote>
+<p>Rootless机制将成为对抗恶意程序的最后防线</p>
+</blockquote>
+
+<p>如果想关闭<code>Rootless</code>. 重启mac按住<code>Command+R</code>, 进入恢复模式, 打开Terminal.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ csrutil disable</code></pre></td></tr></table>
+</div>
+</div>
+<p>重启即可. 如果要恢复默认, 那么</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">$ csrutil enable</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="附录">附录:</h3>
+
+<p>csrutil 命令参数格式:</p>
+
+<blockquote>
+<p>csrutil enable [&ndash;without kext | fs | debug | dtrace | nvram][&ndash;no-internal]</p>
+</blockquote>
+
+<p>禁用: csrutil disable</p>
+
+<blockquote>
+<p>（等同于csrutil enable &ndash;without kext &ndash;without fs &ndash;without debug &ndash;without dtrace &ndash;without nvram</p>
+</blockquote>
+
+<p>其中各个开关, 意义如下:</p>
+
+<blockquote>
+<ul>
+<li>B0: [kext] 允许加载不受信任的kext（与已被废除的kext-dev-mode=1等效）</li>
+<li>B1: [fs] 解锁文件系统限制</li>
+<li>B2: [debug] 允许task_for_pid()调用</li>
+<li>B3: [n/a] 允许内核调试 （官方的csrutil工具无法设置此位）</li>
+<li>B4: [internal] Apple内部保留位（csrutil默认会设置此位，实际不会起作用。设置与否均可）</li>
+<li>B5: [dtrace] 解锁dtrace限制</li>
+<li>B6: [nvram] 解锁NVRAM限制</li>
+<li>B7: [n/a] 允许设备配置（新增，具体作用暂时未确定）</li>
+</ul>
+</blockquote>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">xyslion</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-07-22
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mac/">mac</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/bash_upgrade/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Mac升级bash到最新版本</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+  <a href="https://xyslion.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xyslion</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

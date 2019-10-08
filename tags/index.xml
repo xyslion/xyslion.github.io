@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on xyslion的笔记屋</title>
+    <link>https://xyslion.github.io/tags/</link>
+    <description>Recent content in Tags on xyslion的笔记屋</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 08 Oct 2019 15:57:56 +0800</lastBuildDate>
+    
+	<atom:link href="https://xyslion.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>gc</title>
+      <link>https://xyslion.github.io/tags/gc/</link>
+      <pubDate>Tue, 08 Oct 2019 15:57:56 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/gc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>golang</title>
+      <link>https://xyslion.github.io/tags/golang/</link>
+      <pubDate>Tue, 08 Oct 2019 15:57:56 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/golang/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>bash</title>
+      <link>https://xyslion.github.io/tags/bash/</link>
+      <pubDate>Thu, 08 Aug 2019 10:36:49 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/bash/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mac</title>
+      <link>https://xyslion.github.io/tags/mac/</link>
+      <pubDate>Thu, 08 Aug 2019 10:36:49 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/mac/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>shell</title>
+      <link>https://xyslion.github.io/tags/shell/</link>
+      <pubDate>Thu, 08 Aug 2019 10:36:49 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/shell/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>java</title>
+      <link>https://xyslion.github.io/tags/java/</link>
+      <pubDate>Fri, 02 Aug 2019 10:44:46 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>spring</title>
+      <link>https://xyslion.github.io/tags/spring/</link>
+      <pubDate>Fri, 02 Aug 2019 10:44:46 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/spring/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>consul</title>
+      <link>https://xyslion.github.io/tags/consul/</link>
+      <pubDate>Sat, 27 Jul 2019 21:03:26 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/consul/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

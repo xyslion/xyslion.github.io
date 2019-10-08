@@ -1,0 +1,151 @@
+<?xml-stylesheet type="text/xsl" href="https://xyslion.github.io/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://xyslion.github.io/categories/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/gc/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/categories/golang/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/golang/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/golang_gc/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/</loc>
+    <lastmod>2019-10-08T15:57:56+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/bash/</loc>
+    <lastmod>2019-08-08T10:36:49+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/mac/</loc>
+    <lastmod>2019-08-08T10:36:49+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/categories/mac/</loc>
+    <lastmod>2019-08-08T10:36:49+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/shell/</loc>
+    <lastmod>2019-08-08T10:36:49+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/bash_ps1/</loc>
+    <lastmod>2019-08-08T10:36:49+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/categories/java/</loc>
+    <lastmod>2019-08-02T10:44:46+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/java/</loc>
+    <lastmod>2019-08-02T10:44:46+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/spring/</loc>
+    <lastmod>2019-08-02T10:44:46+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/spring_smart_life_cycle/</loc>
+    <lastmod>2019-08-02T10:44:46+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/tags/consul/</loc>
+    <lastmod>2019-07-27T21:03:26+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/consul_deregister/</loc>
+    <lastmod>2019-07-27T21:03:26+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/bash_upgrade/</loc>
+    <lastmod>2019-07-22T13:50:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://xyslion.github.io/post/rootless/</loc>
+    <lastmod>2019-07-22T10:14:43+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>
