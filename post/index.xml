@@ -6,10 +6,19 @@
     <description>Recent content in Posts on xyslion的笔记屋</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 11 Oct 2019 10:17:58 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 12:40:22 +0800</lastBuildDate>
     
 	<atom:link href="https://xyslion.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>两个大数字符串的乘积</title>
+      <link>https://xyslion.github.io/post/two_nums_mul/</link>
+      <pubDate>Fri, 11 Oct 2019 12:40:22 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/post/two_nums_mul/</guid>
+      <description>题目： 给定两个以字符串形式表示的非负整数 num1 和 num2，返回 num1 和 num2 的乘积，它们的乘积也表示为字符串形式。 示例 1: 输入: num1 = &amp;ldquo;2&amp;rdquo;, num2 = &amp;ldquo;3</description>
+    </item>
     
     <item>
       <title>Golang里定义goroutine池控制最大goroutine数量</title>
