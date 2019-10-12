@@ -2,14 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://xyslion.github.io/categories/algorithm/</loc>
+    <loc>https://xyslion.github.io/tags/algorithm/</loc>
     <lastmod>2019-10-11T12:40:22+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xyslion.github.io/tags/algorithm/</loc>
+    <loc>https://xyslion.github.io/categories/algorithm/</loc>
     <lastmod>2019-10-11T12:40:22+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -51,14 +51,14 @@
   </url>
   
   <url>
-    <loc>https://xyslion.github.io/tags/golang/</loc>
+    <loc>https://xyslion.github.io/categories/golang/</loc>
     <lastmod>2019-10-11T10:17:58+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xyslion.github.io/categories/golang/</loc>
+    <loc>https://xyslion.github.io/tags/golang/</loc>
     <lastmod>2019-10-11T10:17:58+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -128,14 +128,14 @@
   </url>
   
   <url>
-    <loc>https://xyslion.github.io/categories/java/</loc>
+    <loc>https://xyslion.github.io/tags/java/</loc>
     <lastmod>2019-08-02T10:44:46+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://xyslion.github.io/tags/java/</loc>
+    <loc>https://xyslion.github.io/categories/java/</loc>
     <lastmod>2019-08-02T10:44:46+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
