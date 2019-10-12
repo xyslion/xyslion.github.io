@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>两个SQL查询引发的mysql索引学习 - xyslion的笔记屋</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="xyslion" /><meta name="description" content="如果在业务中经常使用以下两个SQL查询： 1 2 SELECT * FROM person WHERE `name` = &amp;#39;a&amp;#39;; SELECT * FROM person WHERE `name` = &amp;#39;a&amp;#39; AND age = 6; 则应该对person表怎么建索引？ 索引 索引是帮助mysq" /><meta name="keywords" content="Hugo, theme, even" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.58.3 with theme even" />
+
+
+<link rel="canonical" href="https://xyslion.github.io/post/mysql_index/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="两个SQL查询引发的mysql索引学习" />
+<meta property="og:description" content="如果在业务中经常使用以下两个SQL查询： 1 2 SELECT * FROM person WHERE `name` = &#39;a&#39;; SELECT * FROM person WHERE `name` = &#39;a&#39; AND age = 6; 则应该对person表怎么建索引？ 索引 索引是帮助mysq" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://xyslion.github.io/post/mysql_index/" />
+<meta property="article:published_time" content="2019-10-12T19:27:43+08:00" />
+<meta property="article:modified_time" content="2019-10-12T19:27:43+08:00" />
+<meta itemprop="name" content="两个SQL查询引发的mysql索引学习">
+<meta itemprop="description" content="如果在业务中经常使用以下两个SQL查询： 1 2 SELECT * FROM person WHERE `name` = &#39;a&#39;; SELECT * FROM person WHERE `name` = &#39;a&#39; AND age = 6; 则应该对person表怎么建索引？ 索引 索引是帮助mysq">
+
+
+<meta itemprop="datePublished" content="2019-10-12T19:27:43&#43;08:00" />
+<meta itemprop="dateModified" content="2019-10-12T19:27:43&#43;08:00" />
+<meta itemprop="wordCount" content="1004">
+
+
+
+<meta itemprop="keywords" content="mysql,index," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="两个SQL查询引发的mysql索引学习"/>
+<meta name="twitter:description" content="如果在业务中经常使用以下两个SQL查询： 1 2 SELECT * FROM person WHERE `name` = &#39;a&#39;; SELECT * FROM person WHERE `name` = &#39;a&#39; AND age = 6; 则应该对person表怎么建索引？ 索引 索引是帮助mysq"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">xyslion</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">首页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">档案</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">分类</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">xyslion</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">首页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">档案</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">分类</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">两个SQL查询引发的mysql索引学习</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-10-12 </span>
+        <div class="post-category">
+            <a href="/categories/mysql/"> mysql </a>
+            </div>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#索引">索引</a>
+<ul>
+<li><a href="#hash索引">Hash索引</a></li>
+<li><a href="#b-tree索引">B+Tree索引</a></li>
+</ul></li>
+<li><a href="#查询优化器">查询优化器</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p>如果在业务中经常使用以下两个SQL查询：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-sql" data-lang="sql"><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">person</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">name</span><span class="o">`</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">person</span> <span class="k">WHERE</span> <span class="o">`</span><span class="n">name</span><span class="o">`</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span> <span class="k">AND</span> <span class="n">age</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>则应该对<code>person</code>表怎么建索引？</p>
+
+<h2 id="索引">索引</h2>
+
+<p>索引是帮助mysql高效获取数据的数据结构。<br />
+常见的mysql索引有以下两种：<br />
+* Hash索引<br />
+* B+Tree索引</p>
+
+<h3 id="hash索引">Hash索引</h3>
+
+<p>Hash索引的底层是哈希表，是一种以key-value存储数据的结构。所以数据不一定是连续的，适用于等值查询。<br />
+有以下的缺点：<br />
+* 无法进行范围查询<br />
+* 无法利用索引进行排序<br />
+* 不支持多列联合索引的最左匹配规则<br />
+* 如果数据量大还有可能出现哈希碰撞问题</p>
+
+<h3 id="b-tree索引">B+Tree索引</h3>
+
+<p>B+Tree是一种多路平衡查询树，他的节点是天然有序的(左节点 &lt; 父节点, 父节点 &lt; 右子节点)， 因此在做范围查询的时候不需要做全表扫描。<br />
+叶子节点上存放的是key和数据， 其他节点上存放的是key<br />
+* 如果是聚簇索引， 则存key和行完整数据<br />
+* 如果是非聚簇索引， 则存key和索引列内容</p>
+
+<p>如果使用非聚簇索引进行查询数据时， 会先使用非聚簇索引查询得到key， 然后再用key的聚簇索引取得真正的数据。</p>
+
+<p>每一个索引， 维护一个B+Tree数据结构， 因此当有数据写入时， 需要对B+Tree进行操作， 因此索引的数量会影响写入的性能。</p>
+
+<p>B+Tree树查找时， root节点是常驻内存的， 查找下一层节点时需要进行一次磁盘IO操作。</p>
+
+<p>InnoDB引擎使用B+Tree来存储索引， 就是想尽量减少数据查询时磁盘IO次数。树的高度直接影响影响了查询的性能。一般树的高度在3-4层较为适宜。<br />
+数据库分表的目的也是为了控制树的高度。</p>
+
+<p>mysql可以创建联合索引， 拥有最左前缀匹配原则。<br />
+比如： 创建了一个(key1, key2, key3)这样一个联合索引， 相当于创建(key1), (key1, key2), (key1, key2, key3)三个索引。<br />
+因此联合索引的顺序， 识别度高的列应该放在前面。</p>
+
+<p>但是有时候即使创建了索引， 使用explain进行监控查看时， 并没有生效。那是因为查询优化器在作祟。</p>
+
+<h2 id="查询优化器">查询优化器</h2>
+
+<p>一条SQL语句的查询， 可以有不同的执行方案， 至于最终选择哪种方案， 需要通过优化器进行选择，选择执行成本最低的方案。在一条单表查询语句真正执行之前， MySQL的查询优化器会找出执行该语句所有可能使用的方案， 对比之后找出成本最低的方案。这个成本最低的方案就是所谓的执行计划。<br />
+优化过程大致如下：<br />
+1. 根据搜索条件， 找出所有可能使用的索引<br />
+2. 计算全表扫描的代价<br />
+3. 计算使用不同索引执行查询的代价<br />
+4. 对比各种执行方案的代价， 找出成本最低的那一个</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">xyslion</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-10-12
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/mysql/">mysql</a>
+          <a href="/tags/index/">index</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/two_nums_mul/">
+            <span class="next-text nav-default">两个大数字符串的乘积</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+  <a href="https://xyslion.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">xyslion</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

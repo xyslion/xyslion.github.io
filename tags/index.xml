@@ -6,10 +6,28 @@
     <description>Recent content in Tags on xyslion的笔记屋</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 11 Oct 2019 12:40:22 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 12 Oct 2019 19:27:43 +0800</lastBuildDate>
     
 	<atom:link href="https://xyslion.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>index</title>
+      <link>https://xyslion.github.io/tags/index/</link>
+      <pubDate>Sat, 12 Oct 2019 19:27:43 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/index/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>mysql</title>
+      <link>https://xyslion.github.io/tags/mysql/</link>
+      <pubDate>Sat, 12 Oct 2019 19:27:43 +0800</pubDate>
+      
+      <guid>https://xyslion.github.io/tags/mysql/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>algorithm</title>
