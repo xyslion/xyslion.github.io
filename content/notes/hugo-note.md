@@ -4,7 +4,6 @@ date: 2021-12-17T13:54:49+08:00
 slug: hugo-note
 tags: ["hugo", "blog", "note"]
 categories: ["hugo"]
-draft: true
 ---
 
 ## 利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客
@@ -12,13 +11,6 @@ draft: true
 * `GitHub Pages` 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。
 * `Hugo` 是一个用 Go 语言编写的静态站点生成器，它针对速度、易用性和可配置性进行了优化，快速灵活。
 * `Markdown` 是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档。
-
-### 新建一个 GitHub 仓库
-
-1. 注册一个[GitHub](https://github.com/)账号。如果你已有账号，直接登录。如果你没有账号，注册并登录。
-2. 打开 GitHub Pages 官网，浏览并了解 User or organization site 部分对应的操作步骤。
-GitHub Pages: [https://pages.github.com](https://pages.github.com)
-1. 新建一个 GitHub repository，库名为 username.github.io，username 即你的 GitHub 账号 username。新建 repository：[github.com/new](https://github.com/new)
 
 ### 安装 Hugo
 
@@ -73,23 +65,32 @@ GitHub Pages: [https://pages.github.com](https://pages.github.com)
 	 hugo  # 构建你的 Hugo 网站，默认将静态站点保存到 "public" 目录。
 	 ```  
 	 **注：Hugo 会将构建的网站内容默认保存至网站根目录的 public/ 文件夹中**
-6. 保存到 GitHub
-   * 初始化 git 仓库 
-	 ```shell
-	 cd blog 
-	 git init  # 初始化 Git 库。
-	 ```  
 
-	* 关联到远程仓库
-	  ```shell
-		git remote add origin git@github.com:xyslion/xyslion.github.io.git  # "xyslion/xyslion.github.io.git" 代表 "your-github-id/your-github-id.github.io.git"。
-	  ```  
-	* 提交修改到远程仓库
-	  ```shell
-		git add .  # 添加所有修改过的文件。你也可以只添加某个文件。
-		git commit -m "Add a new post"  # "Add a new post" 是 commit message.
-		git push -u origin master
-		```    
+### 使用 Git 关联到 GitHub 仓库
+1. 注册一个[GitHub](https://github.com/)账号。如果你已有账号，直接登录。如果你没有账号，注册并登录。  
+
+2. 打开 GitHub Pages 官网，浏览并了解 User or organization site 部分对应的操作步骤。  
+GitHub Pages: [https://pages.github.com](https://pages.github.com)  
+
+3. 新建一个 GitHub repository，库名为 username.github.io，username 即你的 GitHub 账号 username。新建 repository：[github.com/new](https://github.com/new)  
+
+4. 初始化 git 仓库 
+   ```shell
+   cd blog 
+   git init  # 初始化 Git 库。
+   ```  
+
+5. 关联到远程仓库
+   ```shell
+   git remote add origin git@github.com:xyslion/xyslion.github.io.git  # "xyslion/xyslion.github.io.git" 代表 "your-github-id/your-github-id.github.io.git"。
+   ``` 
+
+6. 提交修改到远程仓库
+   ```shell
+   git add .  # 添加所有修改过的文件。你也可以只添加某个文件。
+   git commit -m "Add a new post"  # "Add a new post" 是 commit message.
+   git push -u origin master
+   ```    
 
 ### 使用 GitHub Action 进行自动发布文章
 
@@ -144,3 +145,11 @@ GitHub Pages: [https://pages.github.com](https://pages.github.com)
         ```  
 
 这样配置之后，当提交修改到master分支后，就会触发这个workflow，然后自动的将`/public`目录内容发送到`gh-pages`分支
+
+### 参考文档
+
+* [Hugo](https://gohugo.io/getting-started/quick-start/)
+* [GitHub Pages](https://pages.github.com)
+* [Host on GitHub](https://gohugo.io/hosting-and-deployment/hosting-on-github/)
+* [GitHub Action Deploy Key](https://github.com/marketplace/actions/github-pages-action#tips-and-faq)
+* [Markdown语法](https://www.markdown.xyz/basic-syntax/)
