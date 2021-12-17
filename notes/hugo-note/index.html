@@ -6,7 +6,7 @@
 <title>利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 - 钰的笔记屋</title>
 <meta name=description content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成">
 <meta name=author content="钰"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"钰的笔记屋","url":"https:\/\/xyslion.github.io\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/xyslion.github.io\/"}</script>
-<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/xyslion.github.io\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/xyslion.github.io\/notes\/hugo-note\/","name":"利用 git hub pages, hugo, markdown 搭建个人笔记博客"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"钰"},"headline":"利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客","description":"利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成","inLanguage":"zh-cn","wordCount":1450,"datePublished":"2021-12-17T13:54:49","dateModified":"2021-12-17T13:54:49","image":"https:\/\/xyslion.github.io\/img\/yu.jpeg","keywords":["hugo, blog, note"],"mainEntityOfPage":"https:\/\/xyslion.github.io\/notes\/hugo-note\/","publisher":{"@type":"Organization","name":"https:\/\/xyslion.github.io\/","logo":{"@type":"ImageObject","url":"https:\/\/xyslion.github.io\/img\/yu.jpeg","height":60,"width":60}}}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/xyslion.github.io\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/xyslion.github.io\/notes\/hugo-note\/","name":"利用 git hub pages, hugo, markdown 搭建个人笔记博客"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"钰"},"headline":"利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客","description":"利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成","inLanguage":"zh-cn","wordCount":1453,"datePublished":"2021-12-17T13:54:49","dateModified":"2021-12-17T13:54:49","image":"https:\/\/xyslion.github.io\/img\/yu.jpeg","keywords":["hugo, blog, note"],"mainEntityOfPage":"https:\/\/xyslion.github.io\/notes\/hugo-note\/","publisher":{"@type":"Organization","name":"https:\/\/xyslion.github.io\/","logo":{"@type":"ImageObject","url":"https:\/\/xyslion.github.io\/img\/yu.jpeg","height":60,"width":60}}}</script>
 <meta property="og:title" content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客">
 <meta property="og:description" content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成">
 <meta property="og:image" content="https://xyslion.github.io/img/yu.jpeg">
@@ -174,8 +174,9 @@ draft: true
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  <span class=c1># 需要先将markdown文件中的`draft: true`才能将该篇文件构建出来</span>
   hugo  <span class=c1># 构建你的 Hugo 网站，默认将静态站点保存到 &#34;public&#34; 目录。</span>
 </code></pre></div><strong>注：Hugo 会将构建的网站内容默认保存至网站根目录的 public/ 文件夹中</strong></li>
-<li>保存到 GitHub
-<ul>
+</ol>
+<h3 id=使用-git-关联到-github>使用 Git 关联到 GitHub</h3>
+<ol>
 <li>
 <p>初始化 git 仓库</p>
 <div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>cd</span> blog 
@@ -183,16 +184,14 @@ git init  <span class=c1># 初始化 Git 库。</span>
 </code></pre></div></li>
 <li>
 <p>关联到远程仓库</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  git remote add origin git@github.com:xyslion/xyslion.github.io.git  <span class=c1># &#34;xyslion/xyslion.github.io.git&#34; 代表 &#34;your-github-id/your-github-id.github.io.git&#34;。</span>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>git remote add origin git@github.com:xyslion/xyslion.github.io.git  <span class=c1># &#34;xyslion/xyslion.github.io.git&#34; 代表 &#34;your-github-id/your-github-id.github.io.git&#34;。</span>
 </code></pre></div></li>
 <li>
 <p>提交修改到远程仓库</p>
-<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  git add .  <span class=c1># 添加所有修改过的文件。你也可以只添加某个文件。</span>
-  git commit -m <span class=s2>&#34;Add a new post&#34;</span>  <span class=c1># &#34;Add a new post&#34; 是 commit message.</span>
-  git push -u origin master
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>git add .  <span class=c1># 添加所有修改过的文件。你也可以只添加某个文件。</span>
+git commit -m <span class=s2>&#34;Add a new post&#34;</span>  <span class=c1># &#34;Add a new post&#34; 是 commit message.</span>
+git push -u origin master
 </code></pre></div></li>
-</ul>
-</li>
 </ol>
 <h3 id=使用-github-action-进行自动发布文章>使用 GitHub Action 进行自动发布文章</h3>
 <p><code>master</code>分支放 Hugo 站点原文件，然后将<code>/public</code>提交到<code>gh-pages</code>分支用于<code>GitHub Pages</code>显示</p>
@@ -291,7 +290,7 @@ git init  <span class=c1># 初始化 Git 库。</span>
 </p>
 <p class="credits theme-by text-muted">
 由 <a href=https://gohugo.io>Hugo v0.90.1</a> 强力驱动 &nbsp;&bull;&nbsp; 主题 <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> 移植自 <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
-&nbsp;&bull;&nbsp;[<a href=29b8e7841dfea5e16bc136f357759cf175633ae6>29b8e784</a>]
+&nbsp;&bull;&nbsp;[<a href=8665fc7449821614f715ca4c6c0aefd58871129d>8665fc74</a>]
 </p>
 </div>
 </div>
