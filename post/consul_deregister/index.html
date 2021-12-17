@@ -1,276 +1,200 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
+<!doctype html><html lang=zh-cn>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>consul服务下线的巨坑 - xyslion的笔记屋</title>
-  <meta name="renderer" content="webkit" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta name="theme-color" content="#f8f5ec" />
-<meta name="msapplication-navbutton-color" content="#f8f5ec">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
-
-
-<meta name="author" content="xyslion" /><meta name="description" content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可" /><meta name="keywords" content="Hugo, theme, even" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
-
-
-<link rel="canonical" href="https://xyslion.github.io/post/consul_deregister/" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-
-
-<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
-
-
-<meta property="og:title" content="consul服务下线的巨坑" />
-<meta property="og:description" content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://xyslion.github.io/post/consul_deregister/" />
-<meta property="article:published_time" content="2019-07-27T21:03:26+08:00" />
-<meta property="article:modified_time" content="2019-07-27T21:03:26+08:00" />
-<meta itemprop="name" content="consul服务下线的巨坑">
-<meta itemprop="description" content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可">
-
-
-<meta itemprop="datePublished" content="2019-07-27T21:03:26&#43;08:00" />
-<meta itemprop="dateModified" content="2019-07-27T21:03:26&#43;08:00" />
-<meta itemprop="wordCount" content="670">
-
-
-
-<meta itemprop="keywords" content="consul," />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="consul服务下线的巨坑"/>
-<meta name="twitter:description" content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可"/>
-
-<!--[if lte IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
-<![endif]-->
-
-<!--[if lt IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-<![endif]-->
-
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>consul服务下线的巨坑 - 钰的笔记屋</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="钰"><meta name=description content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可"><meta name=keywords content="Hugo,theme,even">
+<meta name=generator content="Hugo 0.90.1 with theme even">
+<link rel=canonical href=https://xyslion.github.io/post/consul_deregister/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="consul服务下线的巨坑">
+<meta property="og:description" content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xyslion.github.io/post/consul_deregister/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2019-07-27T21:03:26+08:00">
+<meta property="article:modified_time" content="2019-07-27T21:03:26+08:00">
+<meta itemprop=name content="consul服务下线的巨坑">
+<meta itemprop=description content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可"><meta itemprop=datePublished content="2019-07-27T21:03:26+08:00">
+<meta itemprop=dateModified content="2019-07-27T21:03:26+08:00">
+<meta itemprop=wordCount content="670">
+<meta itemprop=keywords content="consul,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="consul服务下线的巨坑">
+<meta name=twitter:description content="consul服务下线的巨坑 当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时, 1 $ curl consul.address:8500/v1/agent/service/deregister/:service_id 使用如上api可"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
-  <div id="mobile-navbar" class="mobile-navbar">
-  <div class="mobile-header-logo">
-    <a href="/" class="logo">xyslion</a>
-  </div>
-  <div class="mobile-navbar-icon">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>钰</a>
 </div>
-<nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    <a href="/">
-        <li class="mobile-menu-item">首页</li>
-      </a><a href="/post/">
-        <li class="mobile-menu-item">档案</li>
-      </a><a href="/tags/">
-        <li class="mobile-menu-item">标签</li>
-      </a><a href="/categories/">
-        <li class="mobile-menu-item">分类</li>
-      </a>
-  </ul>
-</nav>
-  <div class="container" id="mobile-panel">
-    <header id="header" class="header">
-        <div class="logo-wrapper">
-  <a href="/" class="logo">xyslion</a>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
 </div>
-
-<nav class="site-navbar">
-  <ul id="menu" class="menu">
-    <li class="menu-item">
-        <a class="menu-item-link" href="/">首页</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/post/">档案</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/tags/">标签</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/">分类</a>
-      </li>
-  </ul>
-</nav>
-    </header>
-
-    <main id="main" class="main">
-      <div class="content-wrapper">
-        <div id="content" class="content">
-          <article class="post">
-    
-    <header class="post-header">
-      <h1 class="post-title">consul服务下线的巨坑</h1>
-
-      <div class="post-meta">
-        <span class="post-time"> 2019-07-27 </span>
-        
-        
-      </div>
-    </header>
-
-    <div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  <div class="post-toc-content always-active">
-    <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#consul服务下线的巨坑">consul服务下线的巨坑</a></li>
-</ul></li>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>首页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>档案</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
 </ul>
 </nav>
-  </div>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>钰</a>
 </div>
-    <div class="post-content">
-      
-
-<h2 id="consul服务下线的巨坑">consul服务下线的巨坑</h2>
-
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>首页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>档案</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>consul服务下线的巨坑</h1>
+<div class=post-meta>
+<span class=post-time> 2019-07-27 </span>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#consul服务下线的巨坑>consul服务下线的巨坑</a></li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=consul服务下线的巨坑>consul服务下线的巨坑</h2>
 <p>当在开发环境时, 只部署一个consul, 既当妈又当爸(既当server又当agent)时,</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
 </span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">$ curl consul.address:8500/v1/agent/service/deregister/:service_id</code></pre></td></tr></table>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>$ curl consul.address:8500/v1/agent/service/deregister/:service_id
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>使用如上api可以很方便的将服务从consul上下线, 如果问题就这么解决了,
+</div><p>使用如上api可以很方便的将服务从consul上下线, 如果问题就这么解决了,
 那就不叫巨坑了, 在生产环境时, 按照官方推荐, 要3个server,
 agent client端按照集群容量自行定义, 通过client进行注册, 如果是部署在k8s里,
 agent client端推荐使用DaemonSet方式部署, 既一个k8s节点一个agent client,
 如此的问题就来了, 因为agent client是多台, 所以需要dns等对client进行负载,
 保证高可用, 避免单点, 这时<code>consul.address</code>为域名, 再使用上面的api去下线服务
 发现结果虽然返回成功, 但是服务其实并没有下线.</p>
-
 <p>就此展开调查, 发现网上很多人也遇到了此问题, 有的使用<code>/v1/catalog/deregister</code>,
 有的先使用<code>/v1/health/service/:service</code>先取得该服务的所有后端ip再比对<code>service_id</code>
 进行删除, 试了两种方法都不行, 在一次偶然的机会, 发现可以用consul自带的<code>command</code>进行
 相应的操作, 一开始以为是api有问题, 因此随便进入了一台client使用一下命令进行删除</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt">1
-</span><span class="lnt">2
+<div class=highlight><div class=chroma>
+<table class=lntable><tr><td class=lntd>
+<pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
 </span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">/ <span class="c1"># consul services deregister -id=&#34;echo-1&#34;</span>
-Deregistered service: echo-1</code></pre></td></tr></table>
+<td class=lntd>
+<pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>/ <span class=c1># consul services deregister -id=&#34;echo-1&#34;</span>
+Deregistered service: echo-1
+</code></pre></td></tr></table>
 </div>
-</div>
-<p>虽然提示成功, 但是通过ui来看, 并没有删除成功, 在看ui时,发现上面有注册的节点信息,
+</div><p>虽然提示成功, 但是通过ui来看, 并没有删除成功, 在看ui时,发现上面有注册的节点信息,
 进入该节点, 继续使用以上命令执行下线操作, 同样提示下线成功了, 并且ui上该服务也真实
 下线了, 因此consul的服务下线是要在哪个节点上注册, 就要在哪个节点上反注册才能下线成功</p>
-
-    </div>
-
-    <div class="post-copyright">
-  <p class="copyright-item">
-    <span class="item-title">文章作者</span>
-    <span class="item-content">xyslion</span>
-  </p>
-  <p class="copyright-item">
-    <span class="item-title">上次更新</span>
-    <span class="item-content">
-        2019-07-27
-        
-    </span>
-  </p>
-  
-  
 </div>
-<footer class="post-footer">
-      <div class="post-tags">
-          <a href="/tags/consul/">consul</a>
-          </div>
-      <nav class="post-nav">
-        <a class="prev" href="/post/spring_smart_life_cycle/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Spring中的SmartLifecycle作用</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/bash_upgrade/">
-            <span class="next-text nav-default">Mac升级bash到最新版本</span>
-            <span class="next-text nav-mobile">下一篇</span>
-            <i class="iconfont icon-right"></i>
-          </a>
-      </nav>
-    </footer>
-  </article>
-        </div>
-        
-
-  
-
-  
-
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="social-links">
-  <a href="https://xyslion.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>钰</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2019-07-27
+</span>
+</p>
 </div>
-
-<div class="copyright">
-  <span class="power-by">
-    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
-  </span>
-  <span class="division">|</span>
-  <span class="theme-info">
-    主题 - 
-    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
-  </span>
-
-  
-
-  <span class="copyright-year">
-    &copy; 
-    2019
-    <span class="heart">
-      <i class="iconfont icon-heart"></i>
-    </span>
-    <span class="author">xyslion</span>
-  </span>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/consul/>consul</a>
 </div>
-    </footer>
-
-    <div class="back-to-top" id="back-to-top">
-      <i class="iconfont icon-up"></i>
-    </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
-
-
-
-
-
-
-
-
+<nav class=post-nav>
+<a class=prev href=/post/spring_smart_life_cycle/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Spring中的SmartLifecycle作用</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/bash_upgrade/>
+<span class="next-text nav-default">Mac升级bash到最新版本</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://xyslion.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2019 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>钰</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
 </body>
 </html>
