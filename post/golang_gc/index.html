@@ -1,318 +1,217 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
+<!doctype html><html lang=zh-cn>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>golang的gc算法理解 - xyslion的笔记屋</title>
-  <meta name="renderer" content="webkit" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-<meta name="theme-color" content="#f8f5ec" />
-<meta name="msapplication-navbutton-color" content="#f8f5ec">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
-
-
-<meta name="author" content="xyslion" /><meta name="description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola" /><meta name="keywords" content="Hugo, theme, even" />
-
-
-
-
-
-
-<meta name="generator" content="Hugo 0.58.3 with theme even" />
-
-
-<link rel="canonical" href="https://xyslion.github.io/post/golang_gc/" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/manifest.json">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
-
-
-<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
-
-
-<meta property="og:title" content="golang的gc算法理解" />
-<meta property="og:description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="https://xyslion.github.io/post/golang_gc/" />
-<meta property="article:published_time" content="2019-10-08T15:57:56+08:00" />
-<meta property="article:modified_time" content="2019-10-08T15:57:56+08:00" />
-<meta itemprop="name" content="golang的gc算法理解">
-<meta itemprop="description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola">
-
-
-<meta itemprop="datePublished" content="2019-10-08T15:57:56&#43;08:00" />
-<meta itemprop="dateModified" content="2019-10-08T15:57:56&#43;08:00" />
-<meta itemprop="wordCount" content="1240">
-
-
-
-<meta itemprop="keywords" content="golang,gc," />
-<meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="golang的gc算法理解"/>
-<meta name="twitter:description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola"/>
-
-<!--[if lte IE 9]>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
-<![endif]-->
-
-<!--[if lt IE 9]>
-  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-<![endif]-->
-
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge,chrome=1">
+<title>golang的gc算法理解 - 钰的笔记屋</title>
+<meta name=renderer content="webkit">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv=cache-control content="no-transform">
+<meta http-equiv=cache-control content="no-siteapp">
+<meta name=theme-color content="#f8f5ec">
+<meta name=msapplication-navbutton-color content="#f8f5ec">
+<meta name=apple-mobile-web-app-capable content="yes">
+<meta name=apple-mobile-web-app-status-bar-style content="#f8f5ec">
+<meta name=author content="钰"><meta name=description content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola"><meta name=keywords content="Hugo,theme,even">
+<meta name=generator content="Hugo 0.90.1 with theme even">
+<link rel=canonical href=https://xyslion.github.io/post/golang_gc/>
+<link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png>
+<link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png>
+<link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png>
+<link rel=manifest href=/manifest.json>
+<link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5>
+<link href=/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css rel=stylesheet>
+<link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin=anonymous>
+<meta property="og:title" content="golang的gc算法理解">
+<meta property="og:description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://xyslion.github.io/post/golang_gc/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2019-10-08T15:57:56+08:00">
+<meta property="article:modified_time" content="2019-10-08T15:57:56+08:00">
+<meta itemprop=name content="golang的gc算法理解">
+<meta itemprop=description content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola"><meta itemprop=datePublished content="2019-10-08T15:57:56+08:00">
+<meta itemprop=dateModified content="2019-10-08T15:57:56+08:00">
+<meta itemprop=wordCount content="1240">
+<meta itemprop=keywords content="golang,gc,"><meta name=twitter:card content="summary">
+<meta name=twitter:title content="golang的gc算法理解">
+<meta name=twitter:description content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola"><!--[if lte IE 9]><script src=https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js></script><![endif]--><!--[if lt IE 9]><script src=https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js></script>
+<script src=https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js></script><![endif]-->
 </head>
 <body>
-  <div id="mobile-navbar" class="mobile-navbar">
-  <div class="mobile-header-logo">
-    <a href="/" class="logo">xyslion</a>
-  </div>
-  <div class="mobile-navbar-icon">
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
+<div id=mobile-navbar class=mobile-navbar>
+<div class=mobile-header-logo>
+<a href=/ class=logo>钰</a>
 </div>
-<nav id="mobile-menu" class="mobile-menu slideout-menu">
-  <ul class="mobile-menu-list">
-    <a href="/">
-        <li class="mobile-menu-item">首页</li>
-      </a><a href="/post/">
-        <li class="mobile-menu-item">档案</li>
-      </a><a href="/tags/">
-        <li class="mobile-menu-item">标签</li>
-      </a><a href="/categories/">
-        <li class="mobile-menu-item">分类</li>
-      </a>
-  </ul>
-</nav>
-  <div class="container" id="mobile-panel">
-    <header id="header" class="header">
-        <div class="logo-wrapper">
-  <a href="/" class="logo">xyslion</a>
+<div class=mobile-navbar-icon>
+<span></span>
+<span></span>
+<span></span>
 </div>
-
-<nav class="site-navbar">
-  <ul id="menu" class="menu">
-    <li class="menu-item">
-        <a class="menu-item-link" href="/">首页</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/post/">档案</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/tags/">标签</a>
-      </li><li class="menu-item">
-        <a class="menu-item-link" href="/categories/">分类</a>
-      </li>
-  </ul>
-</nav>
-    </header>
-
-    <main id="main" class="main">
-      <div class="content-wrapper">
-        <div id="content" class="content">
-          <article class="post">
-    
-    <header class="post-header">
-      <h1 class="post-title">golang的gc算法理解</h1>
-
-      <div class="post-meta">
-        <span class="post-time"> 2019-10-08 </span>
-        <div class="post-category">
-            <a href="/categories/golang/"> golang </a>
-            </div>
-        
-      </div>
-    </header>
-
-    <div class="post-toc" id="post-toc">
-  <h2 class="post-toc-title">文章目录</h2>
-  <div class="post-toc-content always-active">
-    <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#golang的gc算法理解">golang的gc算法理解</a>
-<ul>
-<li><a href="#标记清除算法">标记清除算法</a></li>
-<li><a href="#三色标记算法">三色标记算法</a></li>
-<li><a href="#gc和用户逻辑如何并行操作">gc和用户逻辑如何并行操作？</a>
-<ul>
-<li><a href="#生成新对象">生成新对象</a></li>
-<li><a href="#灰色或者黑色对象引用白色对象">灰色或者黑色对象引用白色对象</a></li>
-</ul></li>
-</ul></li>
-</ul></li>
+</div>
+<nav id=mobile-menu class="mobile-menu slideout-menu">
+<ul class=mobile-menu-list>
+<a href=/>
+<li class=mobile-menu-item>首页</li>
+</a><a href=/post/>
+<li class=mobile-menu-item>档案</li>
+</a><a href=/tags/>
+<li class=mobile-menu-item>标签</li>
+</a><a href=/categories/>
+<li class=mobile-menu-item>分类</li>
+</a>
 </ul>
 </nav>
-  </div>
+<div class=container id=mobile-panel>
+<header id=header class=header>
+<div class=logo-wrapper>
+<a href=/ class=logo>钰</a>
 </div>
-    <div class="post-content">
-      
-
-<h2 id="golang的gc算法理解">golang的gc算法理解</h2>
-
+<nav class=site-navbar>
+<ul id=menu class=menu>
+<li class=menu-item>
+<a class=menu-item-link href=/>首页</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/post/>档案</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/tags/>标签</a>
+</li><li class=menu-item>
+<a class=menu-item-link href=/categories/>分类</a>
+</li>
+</ul>
+</nav>
+</header>
+<main id=main class=main>
+<div class=content-wrapper>
+<div id=content class=content>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>golang的gc算法理解</h1>
+<div class=post-meta>
+<span class=post-time> 2019-10-08 </span>
+<div class=post-category>
+<a href=/categories/golang/> golang </a>
+</div>
+</div>
+</header>
+<div class=post-toc id=post-toc>
+<h2 class=post-toc-title>文章目录</h2>
+<div class="post-toc-content always-active">
+<nav id=TableOfContents>
+<ul>
+<li><a href=#golang的gc算法理解>golang的gc算法理解</a>
+<ul>
+<li><a href=#标记清除算法>标记清除算法</a></li>
+<li><a href=#三色标记算法>三色标记算法</a></li>
+<li><a href=#gc和用户逻辑如何并行操作>gc和用户逻辑如何并行操作？</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class=post-content>
+<h2 id=golang的gc算法理解>golang的gc算法理解</h2>
 <p>经典的gc算法有： <code>引用计数(reference counting)</code>, <code>标记-清除(mark-sweep)</code>, <code>复制收集(copy and collection)</code>.</p>
-
 <p>Golang的gc算法主要基于<code>标记-清除(mark-sweep)</code>算法, 并在此基础上做了优化和改进.</p>
-
 <p>以下是Golang gc算法的里程碑：</p>
-
 <ul>
 <li>v1.1 STW</li>
 <li>v1.3 Mark STW, sweep并行</li>
 <li>v1.5 三色标记法</li>
 <li>v1.8 hybird write barrier</li>
 </ul>
-
 <p>从一开始的一进入gc， 程序就<code>长时间</code>的STW， 被人所诟病， 经过后面优化和改进， 现已经变的非常优秀了. 基本上可以做到1毫秒以下.</p>
-
-<h3 id="标记清除算法">标记清除算法</h3>
-
+<h3 id=标记清除算法>标记清除算法</h3>
 <p>该方法分为两步，标记从根变量开始迭代得遍历所有被引用的对象，对能够通过便利访问到的对象进行标记为<code>被引用</code>；标记完成后进行清除操作，对没有标记过的内存进回收。</p>
-
 <p>这种算法虽然简单，但还存在着一些问题：</p>
-
 <ul>
 <li>STW，stop the world； 让程序暂停， 程序出现卡顿。</li>
 <li>标记需要扫描整个heap</li>
 <li>清除数据会产生heap碎片</li>
 </ul>
-
 <p>Golang是如何解决这个问题的呢？</p>
-
-<h3 id="三色标记算法">三色标记算法</h3>
-
+<h3 id=三色标记算法>三色标记算法</h3>
 <ol>
 <li>程序开始时，所有对象都为白色。</li>
 <li>gc开始时，从根出发扫描所有可达对象，标记为灰色，放入待处理队列。</li>
 <li>从队列中取出灰色对象，将其引用对象标记为灰色放入队列，自身标记为黑色。</li>
 <li>重复3，直到灰色对象队列为空。此时白色对象即为垃圾，进行回收。</li>
 </ol>
-
-<p>如下图所示：<br />
-<img src="https://github.com/xyslion/blog/raw/master/static/media/golang-gc.gif" alt="golang_gc" /></p>
-
+<p>如下图所示：<br>
+<img src=https://github.com/xyslion/blog/raw/master/static/media/golang-gc.gif alt=golang_gc></p>
 <p>三色标记算法大体的流程就是这样的，让我们回到刚才的问题：Golang是如何解决标记-清除(mark and sweep)算法中的卡顿(stw, stop the world)问题的呢？</p>
-
-<h3 id="gc和用户逻辑如何并行操作">gc和用户逻辑如何并行操作？</h3>
-
+<h3 id=gc和用户逻辑如何并行操作>gc和用户逻辑如何并行操作？</h3>
 <p>标记-清除(mark-sweep)算法的STW(stop the world)操作，就是runtime把所有的线程全部冻结掉，所有的线程全部冻结意味着用户逻辑是暂停的。这样所有的对象都不会被修改了，这时候去扫描是绝对安全的。</p>
-
 <p>Golang是如何减短这个过程呢？标记-清除(mark-sweep)算法包含两部分逻辑：标记和清除。我们知道Golang的三色标记法中最后只剩下的黑白两种对象，黑色对象是程序恢复后接着使用的对象，如果不触碰黑色对象，只清除白色的对象，肯定不会影响程序逻辑。所以<code>清除操作和用户逻辑可以并发</code>。</p>
-
 <p>标记操作和用户逻辑也是并发的，用户逻辑会时常生成对象或者改变对象的引用，那么标记和用户逻辑是如何并发的呢？</p>
-
-<h4 id="生成新对象">生成新对象</h4>
-
+<h4 id=生成新对象>生成新对象</h4>
 <p>按照三色标记法的第一步骤来说， 新建对象会被设置为白色，但如果为白色，在执行最后一步的时候这个新建对象会不清除， 肯定会影响程序逻辑， 这样子显然不对。</p>
-
 <p>Golang为了解决这个问题，引入了<code>写屏障</code>这个机制。写屏障：该屏障之前的写操作和之后的写操作相比，先被系统其他组件感知。通俗的讲：就是在gc跑的过程中，监控对象的内存修改，并对对象重新标记(实际上也是超短暂的stw， 然后对对象进行标记)。</p>
-
 <p>在上述情况中，则这时<code>新生成的对象，一律都标为灰色！</code></p>
-
-<h4 id="灰色或者黑色对象引用白色对象">灰色或者黑色对象引用白色对象</h4>
-
+<h4 id=灰色或者黑色对象引用白色对象>灰色或者黑色对象引用白色对象</h4>
 <p>一个黑色对象引用了曾经被标记为白色对象，这时候写屏障机制被触发，像gc发送信号， gc重新扫描对象并标为灰色。</p>
-
 <p>因此， gc一旦开始，无论是创建对象还是对象的引用改变，都会先变为灰色。</p>
-
-    </div>
-
-    <div class="post-copyright">
-  <p class="copyright-item">
-    <span class="item-title">文章作者</span>
-    <span class="item-content">xyslion</span>
-  </p>
-  <p class="copyright-item">
-    <span class="item-title">上次更新</span>
-    <span class="item-content">
-        2019-10-08
-        
-    </span>
-  </p>
-  
-  
 </div>
-<footer class="post-footer">
-      <div class="post-tags">
-          <a href="/tags/golang/">golang</a>
-          <a href="/tags/gc/">gc</a>
-          </div>
-      <nav class="post-nav">
-        <a class="prev" href="/post/goroutine_pool/">
-            <i class="iconfont icon-left"></i>
-            <span class="prev-text nav-default">Golang里定义goroutine池控制最大goroutine数量</span>
-            <span class="prev-text nav-mobile">上一篇</span>
-          </a>
-        <a class="next" href="/post/bash_ps1/">
-            <span class="next-text nav-default">设置个性化的终端命令提示符(PS1 prompt)</span>
-            <span class="next-text nav-mobile">下一篇</span>
-            <i class="iconfont icon-right"></i>
-          </a>
-      </nav>
-    </footer>
-  </article>
-        </div>
-        
-
-  
-
-  
-
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="social-links">
-  <a href="https://xyslion.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+<div class=post-copyright>
+<p class=copyright-item>
+<span class=item-title>文章作者</span>
+<span class=item-content>钰</span>
+</p>
+<p class=copyright-item>
+<span class=item-title>上次更新</span>
+<span class=item-content>
+2019-10-08
+</span>
+</p>
 </div>
-
-<div class="copyright">
-  <span class="power-by">
-    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
-  </span>
-  <span class="division">|</span>
-  <span class="theme-info">
-    主题 - 
-    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
-  </span>
-
-  
-
-  <span class="copyright-year">
-    &copy; 
-    2019
-    <span class="heart">
-      <i class="iconfont icon-heart"></i>
-    </span>
-    <span class="author">xyslion</span>
-  </span>
+<footer class=post-footer>
+<div class=post-tags>
+<a href=/tags/golang/>golang</a>
+<a href=/tags/gc/>gc</a>
 </div>
-    </footer>
-
-    <div class="back-to-top" id="back-to-top">
-      <i class="iconfont icon-up"></i>
-    </div>
-  </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
-<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
-
-
-
-
-
-
-
-
+<nav class=post-nav>
+<a class=prev href=/post/goroutine_pool/>
+<i class="iconfont icon-left"></i>
+<span class="prev-text nav-default">Golang里定义goroutine池控制最大goroutine数量</span>
+<span class="prev-text nav-mobile">上一篇</span>
+</a>
+<a class=next href=/post/bash_ps1/>
+<span class="next-text nav-default">设置个性化的终端命令提示符(PS1 prompt)</span>
+<span class="next-text nav-mobile">下一篇</span>
+<i class="iconfont icon-right"></i>
+</a>
+</nav>
+</footer>
+</article>
+</div>
+</div>
+</main>
+<footer id=footer class=footer>
+<div class=social-links>
+<a href=https://xyslion.github.io/index.xml type=application/rss+xml class="iconfont icon-rss" title=rss></a>
+</div>
+<div class=copyright>
+<span class=power-by>
+由 <a class=hexo-link href=https://gohugo.io>Hugo</a> 强力驱动
+</span>
+<span class=division>|</span>
+<span class=theme-info>
+主题 -
+<a class=theme-link href=https://github.com/olOwOlo/hugo-theme-even>Even</a>
+</span>
+<span class=copyright-year>
+&copy;
+2019 -
+2021<span class=heart><i class="iconfont icon-heart"></i></span><span>钰</span>
+</span>
+</div>
+</footer>
+<div class=back-to-top id=back-to-top>
+<i class="iconfont icon-up"></i>
+</div>
+</div>
+<script src=https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin=anonymous></script>
+<script src=https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin=anonymous></script>
+<script type=text/javascript src=/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js></script>
 </body>
 </html>
