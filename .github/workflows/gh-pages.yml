@@ -1,0 +1,32 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - master # 每次推送到 master 分支都会触发部署任务
+  workflow_dispatch: # 允许手动触发部署
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: latest 
+          extended: true
+
+      - name: Build
+        run: hugo --gc --minify --cleanDestinationDir 
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_branch: gh-pages 
+          publish_dir: ./public

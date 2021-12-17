@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>golang的gc算法理解 - 钰的笔记屋</title>
+  <meta name="description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola">
+  <meta name="author" content="钰"/><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "钰的笔记屋",
+    
+    "url": "https:\/\/xyslion.github.io\/"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "url": "https:\/\/xyslion.github.io\/"
+  
+  
+  
+  
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https:\/\/xyslion.github.io\/",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https:\/\/xyslion.github.io\/post\/golang_gc\/",
+          "name": "Golang的gc算法理解"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "钰"
+  },
+  "headline": "golang的gc算法理解",
+  "description" : "golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola",
+  "inLanguage" : "zh-cn",
+  "wordCount":  1240 ,
+  "datePublished" : "2019-10-08T15:57:56",
+  "dateModified" : "2019-10-08T15:57:56",
+  "image" : "https:\/\/xyslion.github.io\/img\/yu.jpeg",
+  "keywords" : [ "golang, gc" ],
+  "mainEntityOfPage" : "https:\/\/xyslion.github.io\/post\/golang_gc\/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https:\/\/xyslion.github.io\/",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https:\/\/xyslion.github.io\/img\/yu.jpeg",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
+
+<meta property="og:title" content="golang的gc算法理解" />
+<meta property="og:description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola">
+<meta property="og:image" content="https://xyslion.github.io/img/yu.jpeg" />
+<meta property="og:url" content="https://xyslion.github.io/post/golang_gc/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="钰的笔记屋" />
+
+  <meta name="twitter:title" content="golang的gc算法理解" />
+  <meta name="twitter:description" content="golang的gc算法理解 经典的gc算法有： 引用计数(reference counting), 标记-清除(mark-sweep), 复制收集(copy and collection). Gola">
+  <meta name="twitter:image" content="https://xyslion.github.io/img/yu.jpeg" />
+  <meta name="twitter:card" content="summary" />
+  <link href='https://xyslion.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta name="generator" content="Hugo 0.90.0" />
+  <link rel="alternate" href="https://xyslion.github.io/index.xml" type="application/rss+xml" title="钰的笔记屋"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://xyslion.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://xyslion.github.io/css/syntax.css" /><link rel="stylesheet" href="https://xyslion.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">切换导航</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://xyslion.github.io/">钰的笔记屋</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="首页" href="/">首页</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="档案" href="/post/">档案</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="标签" href="/tags/">标签</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="分类" href="/categories/">分类</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a title="钰的笔记屋" href="https://xyslion.github.io/">
+            <img class="avatar-img" src="https://xyslion.github.io/img/yu.jpeg" alt="钰的笔记屋" />
+          </a>
+        </div>
+      </div>
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>golang的gc算法理解</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;发表于 2019-10-08
+  
+  
+  
+  
+    
+      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;钰
+    
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <h2 id="golang的gc算法理解">golang的gc算法理解</h2>
+<p>经典的gc算法有： <code>引用计数(reference counting)</code>, <code>标记-清除(mark-sweep)</code>, <code>复制收集(copy and collection)</code>.</p>
+<p>Golang的gc算法主要基于<code>标记-清除(mark-sweep)</code>算法, 并在此基础上做了优化和改进.</p>
+<p>以下是Golang gc算法的里程碑：</p>
+<ul>
+<li>v1.1 STW</li>
+<li>v1.3 Mark STW, sweep并行</li>
+<li>v1.5 三色标记法</li>
+<li>v1.8 hybird write barrier</li>
+</ul>
+<p>从一开始的一进入gc， 程序就<code>长时间</code>的STW， 被人所诟病， 经过后面优化和改进， 现已经变的非常优秀了. 基本上可以做到1毫秒以下.</p>
+<h3 id="标记清除算法">标记清除算法</h3>
+<p>该方法分为两步，标记从根变量开始迭代得遍历所有被引用的对象，对能够通过便利访问到的对象进行标记为<code>被引用</code>；标记完成后进行清除操作，对没有标记过的内存进回收。</p>
+<p>这种算法虽然简单，但还存在着一些问题：</p>
+<ul>
+<li>STW，stop the world； 让程序暂停， 程序出现卡顿。</li>
+<li>标记需要扫描整个heap</li>
+<li>清除数据会产生heap碎片</li>
+</ul>
+<p>Golang是如何解决这个问题的呢？</p>
+<h3 id="三色标记算法">三色标记算法</h3>
+<ol>
+<li>程序开始时，所有对象都为白色。</li>
+<li>gc开始时，从根出发扫描所有可达对象，标记为灰色，放入待处理队列。</li>
+<li>从队列中取出灰色对象，将其引用对象标记为灰色放入队列，自身标记为黑色。</li>
+<li>重复3，直到灰色对象队列为空。此时白色对象即为垃圾，进行回收。</li>
+</ol>
+<p>如下图所示：<br>
+<img src="https://github.com/xyslion/blog/raw/master/static/media/golang-gc.gif" alt="golang_gc"></p>
+<p>三色标记算法大体的流程就是这样的，让我们回到刚才的问题：Golang是如何解决标记-清除(mark and sweep)算法中的卡顿(stw, stop the world)问题的呢？</p>
+<h3 id="gc和用户逻辑如何并行操作">gc和用户逻辑如何并行操作？</h3>
+<p>标记-清除(mark-sweep)算法的STW(stop the world)操作，就是runtime把所有的线程全部冻结掉，所有的线程全部冻结意味着用户逻辑是暂停的。这样所有的对象都不会被修改了，这时候去扫描是绝对安全的。</p>
+<p>Golang是如何减短这个过程呢？标记-清除(mark-sweep)算法包含两部分逻辑：标记和清除。我们知道Golang的三色标记法中最后只剩下的黑白两种对象，黑色对象是程序恢复后接着使用的对象，如果不触碰黑色对象，只清除白色的对象，肯定不会影响程序逻辑。所以<code>清除操作和用户逻辑可以并发</code>。</p>
+<p>标记操作和用户逻辑也是并发的，用户逻辑会时常生成对象或者改变对象的引用，那么标记和用户逻辑是如何并发的呢？</p>
+<h4 id="生成新对象">生成新对象</h4>
+<p>按照三色标记法的第一步骤来说， 新建对象会被设置为白色，但如果为白色，在执行最后一步的时候这个新建对象会不清除， 肯定会影响程序逻辑， 这样子显然不对。</p>
+<p>Golang为了解决这个问题，引入了<code>写屏障</code>这个机制。写屏障：该屏障之前的写操作和之后的写操作相比，先被系统其他组件感知。通俗的讲：就是在gc跑的过程中，监控对象的内存修改，并对对象重新标记(实际上也是超短暂的stw， 然后对对象进行标记)。</p>
+<p>在上述情况中，则这时<code>新生成的对象，一律都标为灰色！</code></p>
+<h4 id="灰色或者黑色对象引用白色对象">灰色或者黑色对象引用白色对象</h4>
+<p>一个黑色对象引用了曾经被标记为白色对象，这时候写屏障机制被触发，像gc发送信号， gc重新扫描对象并标为灰色。</p>
+<p>因此， gc一旦开始，无论是创建对象还是对象的引用改变，都会先变为灰色。</p>
+
+
+        
+          <div class="blog-tags">
+            
+              <a href="https://xyslion.github.io//tags/golang/">golang</a>&nbsp;
+            
+              <a href="https://xyslion.github.io//tags/gc/">gc</a>&nbsp;
+            
+          </div>
+        
+
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://xyslion.github.io/post/bash_ps1/" data-toggle="tooltip" data-placement="top" title="设置个性化的终端命令提示符(PS1 prompt)">&larr; 前一篇</a>
+            </li>
+          
+          
+            <li class="next">
+              <a href="https://xyslion.github.io/post/goroutine_pool/" data-toggle="tooltip" data-placement="top" title="Golang里定义goroutine池控制最大goroutine数量">后一篇 &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+
+    </div>
+  </div>
+</div>
+
+      
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:xiaoyulion@gmail.com" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              钰
+            
+          
+
+          &nbsp;&bull;&nbsp;&copy;
+          
+            2019
+          
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://xyslion.github.io/">钰的笔记屋</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          由 <a href="https://gohugo.io">Hugo v0.90.0</a> 强力驱动 &nbsp;&bull;&nbsp; 主题 <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> 移植自 <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
+          &nbsp;&bull;&nbsp;[<a href="904af8407fad884e6c3ca066f95e00ff471ef102">904af840</a>]
+        </p>
+      </div>
+    </div>
+  </div>
+</footer><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://xyslion.github.io/js/main.js"></script><script> renderMathInElement(document.body); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script><script src="https://xyslion.github.io/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>
+

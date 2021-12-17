@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>index on 钰的笔记屋</title>
+    <link>https://xyslion.github.io/tags/index/</link>
+    <description>Recent content in index on 钰的笔记屋</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <managingEditor>xiaoyulion@gmail.com (钰)</managingEditor>
+    <webMaster>xiaoyulion@gmail.com (钰)</webMaster>
+    <lastBuildDate>Sat, 12 Oct 2019 19:27:43 +0800</lastBuildDate><atom:link href="https://xyslion.github.io/tags/index/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>两个SQL查询引发的mysql索引学习</title>
+      <link>https://xyslion.github.io/post/mysql_index/</link>
+      <pubDate>Sat, 12 Oct 2019 19:27:43 +0800</pubDate>
+      <author>xiaoyulion@gmail.com (钰)</author>
+      <guid>https://xyslion.github.io/post/mysql_index/</guid>
+      <description>如果在业务中经常使用以下两个SQL查询： 1 2 SELECT*FROMpersonWHERE`name`=&amp;#39;a&amp;#39;;SELECT*FROMpersonWHERE`name`=&amp;#39;a&amp;#39;ANDage=6; 则应该对person表怎么建索引？ 索引 索引是帮助mysql高效获取数据的数据结构。 常见的mys</description>
+    </item>
+    
+  </channel>
+</rss>

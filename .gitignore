@@ -1,0 +1,6 @@
+dev
+.git
+*.bak
+*_bak
+*.old
+*.log

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-cn" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Mac OS的Rootless机制 - 钰的笔记屋</title>
+  <meta name="description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo">
+  <meta name="author" content="钰"/><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "钰的笔记屋",
+    
+    "url": "https:\/\/xyslion.github.io\/"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "url": "https:\/\/xyslion.github.io\/"
+  
+  
+  
+  
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https:\/\/xyslion.github.io\/",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https:\/\/xyslion.github.io\/post\/rootless\/",
+          "name": "MAC os的 rootless机制"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "钰"
+  },
+  "headline": "Mac OS的Rootless机制",
+  "description" : "Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, \/bin和\/usr\/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo",
+  "inLanguage" : "zh-cn",
+  "wordCount":  499 ,
+  "datePublished" : "2019-07-22T10:14:43",
+  "dateModified" : "2019-07-22T10:14:43",
+  "image" : "https:\/\/xyslion.github.io\/img\/yu.jpeg",
+  "keywords" : [ "mac" ],
+  "mainEntityOfPage" : "https:\/\/xyslion.github.io\/post\/rootless\/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https:\/\/xyslion.github.io\/",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https:\/\/xyslion.github.io\/img\/yu.jpeg",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
+
+<meta property="og:title" content="Mac OS的Rootless机制" />
+<meta property="og:description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo">
+<meta property="og:image" content="https://xyslion.github.io/img/yu.jpeg" />
+<meta property="og:url" content="https://xyslion.github.io/post/rootless/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="钰的笔记屋" />
+
+  <meta name="twitter:title" content="Mac OS的Rootless机制" />
+  <meta name="twitter:description" content="Mac OS的Rootless机制 Mac 系统自动更新了OS X 10.14.5后, /bin和/usr/bin目录的文件使用sudo也出现权限问题: 1 2 $ sudo">
+  <meta name="twitter:image" content="https://xyslion.github.io/img/yu.jpeg" />
+  <meta name="twitter:card" content="summary" />
+  <link href='https://xyslion.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta name="generator" content="Hugo 0.90.0" />
+  <link rel="alternate" href="https://xyslion.github.io/index.xml" type="application/rss+xml" title="钰的笔记屋"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://xyslion.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" /><link rel="stylesheet" href="https://xyslion.github.io/css/syntax.css" /><link rel="stylesheet" href="https://xyslion.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">切换导航</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://xyslion.github.io/">钰的笔记屋</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="首页" href="/">首页</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="档案" href="/post/">档案</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="标签" href="/tags/">标签</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="分类" href="/categories/">分类</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a title="钰的笔记屋" href="https://xyslion.github.io/">
+            <img class="avatar-img" src="https://xyslion.github.io/img/yu.jpeg" alt="钰的笔记屋" />
+          </a>
+        </div>
+      </div>
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>Mac OS的Rootless机制</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;发表于 2019-07-22
+  
+    &nbsp;(上次修改时间 2019-10-08)
+  
+  
+  
+  
+    
+      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;钰
+    
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <h2 id="mac-os的rootless机制">Mac OS的Rootless机制</h2>
+<p>Mac 系统自动更新了<code>OS X 10.14.5</code>后, <code>/bin</code>和<code>/usr/bin</code>目录的文件使用<code>sudo</code>也出现权限问题:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ sudo mv /bin/bash /bin/bash.origin
+mv: rename /bin/bash to /bin/bash.origin: Operation not permitted
+</code></pre></td></tr></table>
+</div>
+</div><p>搜索之后, <a href="https://www.jianshu.com/p/22b89f19afd6">midmirror的简书</a>里说, 是<code>El Capitan</code>加入了<code>Rootless机制</code>, 不再能够随心所欲的读写很多路径下了.即使使用<code>sudo</code>也不行.</p>
+<blockquote>
+<p>Rootless机制将成为对抗恶意程序的最后防线</p>
+</blockquote>
+<p>如果想关闭<code>Rootless</code>. 重启mac按住<code>Command+R</code>, 进入恢复模式, 打开Terminal.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ csrutil disable
+</code></pre></td></tr></table>
+</div>
+</div><p>重启即可. 如果要恢复默认, 那么</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">$ csrutil <span class="nb">enable</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="附录">附录:</h3>
+<p>csrutil 命令参数格式:</p>
+<blockquote>
+<p>csrutil enable [&ndash;without kext | fs | debug | dtrace | nvram][&ndash;no-internal]</p>
+</blockquote>
+<p>禁用: csrutil disable</p>
+<blockquote>
+<p>（等同于csrutil enable &ndash;without kext &ndash;without fs &ndash;without debug &ndash;without dtrace &ndash;without nvram</p>
+</blockquote>
+<p>其中各个开关, 意义如下:</p>
+<blockquote>
+<ul>
+<li>B0: [kext] 允许加载不受信任的kext（与已被废除的kext-dev-mode=1等效）</li>
+<li>B1: [fs] 解锁文件系统限制</li>
+<li>B2: [debug] 允许task_for_pid()调用</li>
+<li>B3: [n/a] 允许内核调试 （官方的csrutil工具无法设置此位）</li>
+<li>B4: [internal] Apple内部保留位（csrutil默认会设置此位，实际不会起作用。设置与否均可）</li>
+<li>B5: [dtrace] 解锁dtrace限制</li>
+<li>B6: [nvram] 解锁NVRAM限制</li>
+<li>B7: [n/a] 允许设备配置（新增，具体作用暂时未确定）</li>
+</ul>
+</blockquote>
+
+
+        
+          <div class="blog-tags">
+            
+              <a href="https://xyslion.github.io//tags/mac/">mac</a>&nbsp;
+            
+          </div>
+        
+
+        
+
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+          
+            <li class="next">
+              <a href="https://xyslion.github.io/post/bash_upgrade/" data-toggle="tooltip" data-placement="top" title="Mac升级bash到最新版本">后一篇 &rarr;</a>
+            </li>
+          
+        </ul>
+      
+
+
+      
+
+    </div>
+  </div>
+</div>
+
+      
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:xiaoyulion@gmail.com" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              钰
+            
+          
+
+          &nbsp;&bull;&nbsp;&copy;
+          
+            2019
+          
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://xyslion.github.io/">钰的笔记屋</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          由 <a href="https://gohugo.io">Hugo v0.90.0</a> 强力驱动 &nbsp;&bull;&nbsp; 主题 <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> 移植自 <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
+          &nbsp;&bull;&nbsp;[<a href="904af8407fad884e6c3ca066f95e00ff471ef102">904af840</a>]
+        </p>
+      </div>
+    </div>
+  </div>
+</footer><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://xyslion.github.io/js/main.js"></script><script> renderMathInElement(document.body); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script><script src="https://xyslion.github.io/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>
+
