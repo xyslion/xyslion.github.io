@@ -1,0 +1,309 @@
+<!doctype html><html lang=zh-cn itemscope itemtype=http://schema.org/WebPage>
+<head>
+<meta charset=utf-8>
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 - 钰的笔记屋</title>
+<meta name=description content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成">
+<meta name=author content="钰"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"钰的笔记屋","url":"https:\/\/xyslion.github.io\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/xyslion.github.io\/"}</script>
+<script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/xyslion.github.io\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/xyslion.github.io\/notes\/hugo-note\/","name":"利用 git hub pages, hugo, markdown 搭建个人笔记博客"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":"钰"},"headline":"利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客","description":"利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成","inLanguage":"zh-cn","wordCount":1450,"datePublished":"2021-12-17T13:54:49","dateModified":"2021-12-17T13:54:49","image":"https:\/\/xyslion.github.io\/img\/yu.jpeg","keywords":["hugo, blog, note"],"mainEntityOfPage":"https:\/\/xyslion.github.io\/notes\/hugo-note\/","publisher":{"@type":"Organization","name":"https:\/\/xyslion.github.io\/","logo":{"@type":"ImageObject","url":"https:\/\/xyslion.github.io\/img\/yu.jpeg","height":60,"width":60}}}</script>
+<meta property="og:title" content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客">
+<meta property="og:description" content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成">
+<meta property="og:image" content="https://xyslion.github.io/img/yu.jpeg">
+<meta property="og:url" content="https://xyslion.github.io/notes/hugo-note/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="钰的笔记屋">
+<meta name=twitter:title content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客">
+<meta name=twitter:description content="利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客 GitHub Pages 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。 Hugo 是一个用 Go 语言编写的静态站点生成">
+<meta name=twitter:image content="https://xyslion.github.io/img/yu.jpeg">
+<meta name=twitter:card content="summary">
+<link href=https://xyslion.github.io/img/favicon.ico rel=icon type=image/x-icon>
+<meta name=generator content="Hugo 0.90.1">
+<link rel=alternate href=https://xyslion.github.io/index.xml type=application/rss+xml title=钰的笔记屋><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css integrity=sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y crossorigin=anonymous>
+<link rel=stylesheet href=https://use.fontawesome.com/releases/v5.5.0/css/all.css integrity=sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU crossorigin=anonymous>
+<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css integrity=sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u crossorigin=anonymous><link rel=stylesheet href=https://xyslion.github.io/css/main.css><link rel=stylesheet href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+<link rel=stylesheet href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+<link rel=stylesheet href=https://xyslion.github.io/css/highlight.min.css><link rel=stylesheet href=https://xyslion.github.io/css/codeblock.css><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css integrity=sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh crossorigin=anonymous>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css integrity=sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R crossorigin=anonymous>
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+<div class=container-fluid>
+<div class=navbar-header>
+<button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
+<span class=sr-only>切换导航</span>
+<span class=icon-bar></span>
+<span class=icon-bar></span>
+<span class=icon-bar></span>
+</button>
+<a class=navbar-brand href=https://xyslion.github.io/>钰的笔记屋</a>
+</div>
+<div class="collapse navbar-collapse" id=main-navbar>
+<ul class="nav navbar-nav navbar-right">
+<li>
+<a title=首页 href=/>首页</a>
+</li>
+<li>
+<a title=笔记 href=/notes/>笔记</a>
+</li>
+<li>
+<a title=标签 href=/tags/>标签</a>
+</li>
+<li>
+<a title=分类 href=/categories/>分类</a>
+</li>
+</ul>
+</div>
+<div class=avatar-container>
+<div class=avatar-img-border>
+<a title=钰的笔记屋 href=https://xyslion.github.io/>
+<img class=avatar-img src=https://xyslion.github.io/img/yu.jpeg alt=钰的笔记屋>
+</a>
+</div>
+</div>
+</div>
+</nav>
+<div class=pswp tabindex=-1 role=dialog aria-hidden=true>
+<div class=pswp__bg></div>
+<div class=pswp__scroll-wrap>
+<div class=pswp__container>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+<div class=pswp__item></div>
+</div>
+<div class="pswp__ui pswp__ui--hidden">
+<div class=pswp__top-bar>
+<div class=pswp__counter></div>
+<button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+<div class=pswp__preloader>
+<div class=pswp__preloader__icn>
+<div class=pswp__preloader__cut>
+<div class=pswp__preloader__donut></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+<div class=pswp__share-tooltip></div>
+</div>
+<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+</button>
+<div class=pswp__caption>
+<div class=pswp__caption__center></div>
+</div>
+</div>
+</div>
+</div>
+<header class=header-section>
+<div class="intro-header no-img">
+<div class=container>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<div class=notes-heading>
+<h1>利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客</h1>
+<hr class=small>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class=container role=main>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<article role=main class=blog-post>
+<h2 id=利用-github-pages-hugo-markdown-搭建个人笔记博客>利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客</h2>
+<ul>
+<li><code>GitHub Pages</code> 是一个静态站点托管服务，直接将个人、组织或项目的页面托管于 GitHub 库或仓库 (repository) 中。</li>
+<li><code>Hugo</code> 是一个用 Go 语言编写的静态站点生成器，它针对速度、易用性和可配置性进行了优化，快速灵活。</li>
+<li><code>Markdown</code> 是一种轻量级标记语言，它允许人们使用易读易写的纯文本格式编写文档。</li>
+</ul>
+<h3 id=新建一个-github-仓库>新建一个 GitHub 仓库</h3>
+<ol>
+<li>注册一个<a href=https://github.com/>GitHub</a>账号。如果你已有账号，直接登录。如果你没有账号，注册并登录。</li>
+<li>打开 GitHub Pages 官网，浏览并了解 User or organization site 部分对应的操作步骤。
+GitHub Pages: <a href=https://pages.github.com>https://pages.github.com</a></li>
+<li>新建一个 GitHub repository，库名为 username.github.io，username 即你的 GitHub 账号 username。新建 repository：<a href=https://github.com/new>github.com/new</a></li>
+</ol>
+<h3 id=安装-hugo>安装 Hugo</h3>
+<ol>
+<li>Hugo安装指南: <a href=https://gohugo.io/getting-started/installing/>https://gohugo.io/getting-started/installing/</a></li>
+<li>Mac 安装Hugo，打开一个终端 Terminal, 输入<code>brew install hugo</code></li>
+<li>确认是否安装成功，输入<code>hugo version</code></li>
+</ol>
+<h3 id=使用-hugo-写笔记>使用 Hugo 写笔记</h3>
+<ol>
+<li>新建 Hugo 站点，<code>hugo new site blog</code></li>
+<li>设置网站主题
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  <span class=c1># 进入hugo站点目录</span>
+  <span class=nb>cd</span> blog
+  <span class=c1># 新建themes目录用于主题保存地址</span>
+  mkdir -p themes
+  <span class=c1># 进入主题目录</span>
+  <span class=nb>cd</span> themes
+  <span class=c1># 使用git下载主题</span>
+  git submodule add https://github.com/halogenica/beautifulhugo.git beautifulhugo
+  <span class=c1># 设置网站主题</span>
+  <span class=nb>echo</span> <span class=nv>theme</span> <span class=o>=</span> <span class=s2>&#34;beautifulhugo&#34;</span> &gt; config.toml
+</code></pre></div><strong>注：可以在 Hugo 主题页面 <a href=https://themes.gohugo.io/>https://themes.gohugo.io/</a>挑选自己喜欢的主题</strong></li>
+<li>写文章
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  <span class=c1># 进入网站(项目)根目录</span>
+  <span class=nb>cd</span> blog
+  <span class=c1># 使用hugo命令创建文章</span>
+  hugo new notes/my-fist-note.md
+  <span class=c1># 编辑notes/my-fist-note.md，然后保存就可以</span>
+</code></pre></div><strong>注：最好使用hugo命令来创建文件，因为这样可以自动在markdown文件头部加入一下标记</strong>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown>---
+title: &#34;利用 GitHub Pages, Hugo, Markdown 搭建个人笔记博客&#34;
+date: 2021-12-17T13:54:49+08:00
+slug: hugo-note
+tags: [&#34;hugo&#34;, &#34;blog&#34;, &#34;note&#34;]
+categories: []
+draft: true
+--- 
+</code></pre></div></li>
+<li>本地预览网站效果
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  hugo server -D
+</code></pre></div>使用浏览器打开<code>http://localhost:1313</code>预览</li>
+<li>构建 Hugo 网站
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  <span class=c1># 需要先将markdown文件中的`draft: true`才能将该篇文件构建出来</span>
+  hugo  <span class=c1># 构建你的 Hugo 网站，默认将静态站点保存到 &#34;public&#34; 目录。</span>
+</code></pre></div><strong>注：Hugo 会将构建的网站内容默认保存至网站根目录的 public/ 文件夹中</strong></li>
+<li>保存到 GitHub
+<ul>
+<li>
+<p>初始化 git 仓库</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=nb>cd</span> blog 
+git init  <span class=c1># 初始化 Git 库。</span>
+</code></pre></div></li>
+<li>
+<p>关联到远程仓库</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  git remote add origin git@github.com:xyslion/xyslion.github.io.git  <span class=c1># &#34;xyslion/xyslion.github.io.git&#34; 代表 &#34;your-github-id/your-github-id.github.io.git&#34;。</span>
+</code></pre></div></li>
+<li>
+<p>提交修改到远程仓库</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  git add .  <span class=c1># 添加所有修改过的文件。你也可以只添加某个文件。</span>
+  git commit -m <span class=s2>&#34;Add a new post&#34;</span>  <span class=c1># &#34;Add a new post&#34; 是 commit message.</span>
+  git push -u origin master
+</code></pre></div></li>
+</ul>
+</li>
+</ol>
+<h3 id=使用-github-action-进行自动发布文章>使用 GitHub Action 进行自动发布文章</h3>
+<p><code>master</code>分支放 Hugo 站点原文件，然后将<code>/public</code>提交到<code>gh-pages</code>分支用于<code>GitHub Pages</code>显示</p>
+<ol>
+<li>生成 <code>ACTIONS_DEPLOY_KEY</code>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  ssh-keygen -t rsa -b <span class=m>4096</span> -C <span class=s2>&#34;</span><span class=k>$(</span>git config user.email<span class=k>)</span><span class=s2>&#34;</span> -f gh-pages -N <span class=s2>&#34;&#34;</span>
+</code></pre></div>将生成的私钥文件<code>gh-pages</code>(注意不是公钥<code>gh-pages.pub</code>) 中的内容复制填写到 GitHub 仓库设置中，即在<code>xyslion.github.io</code>项目主页中，找到 Repository Settings -> Secrets -> 添加这个私钥的内容并命名为 <code>ACTIONS_DEPLOY_KEY</code>。 然后在<code>xyslion.github.io</code>项目主页中，找到 Repository Settings -> Deploy Keys -> 添加这个公钥的内容，命名为<code>ACTIONS_DEPLOY_KEY</code>，并勾选 Allow write access。</li>
+<li>配置workflow
+<ul>
+<li>
+<p>创建workflow文件</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell>  mkdir -p .github/workflows/
+  touch .github/workflows/gh-pages.yml
+</code></pre></div></li>
+<li>
+<p>编辑 gh-pages.yml，内容如下:</p>
+<div class=highlight><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>github pages</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>on</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>push</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>branches</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=l>master</span><span class=w> </span><span class=c># 每次推送到 master 分支都会触发部署任务</span><span class=w>
+</span><span class=w>  </span><span class=nt>workflow_dispatch</span><span class=p>:</span><span class=w> </span><span class=c># 允许手动触发部署</span><span class=w>
+</span><span class=w>
+</span><span class=w></span><span class=nt>jobs</span><span class=p>:</span><span class=w>
+</span><span class=w>  </span><span class=nt>deploy</span><span class=p>:</span><span class=w>
+</span><span class=w>    </span><span class=nt>runs-on</span><span class=p>:</span><span class=w> </span><span class=l>ubuntu-18.04</span><span class=w>
+</span><span class=w>    </span><span class=nt>steps</span><span class=p>:</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>actions/checkout@v2</span><span class=w>
+</span><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>submodules</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w> </span><span class=c># Fetch Hugo themes (true OR recursive)</span><span class=w>
+</span><span class=w>          </span><span class=nt>fetch-depth</span><span class=p>:</span><span class=w> </span><span class=m>0</span><span class=w> </span><span class=c># Fetch all history for .GitInfo and .Lastmod</span><span class=w>
+</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Setup Hugo</span><span class=w>
+</span><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>peaceiris/actions-hugo@v2</span><span class=w>
+</span><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>hugo-version</span><span class=p>:</span><span class=w> </span><span class=l>latest </span><span class=w>
+</span><span class=w>          </span><span class=nt>extended</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Build</span><span class=w>
+</span><span class=w>        </span><span class=nt>run</span><span class=p>:</span><span class=w> </span><span class=l>hugo --gc --minify --cleanDestinationDir</span><span class=w>
+</span><span class=w>
+</span><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>Deploy</span><span class=w>
+</span><span class=w>        </span><span class=nt>uses</span><span class=p>:</span><span class=w> </span><span class=l>peaceiris/actions-gh-pages@v3</span><span class=w>
+</span><span class=w>        </span><span class=nt>with</span><span class=p>:</span><span class=w>
+</span><span class=w>          </span><span class=nt>deploy_key</span><span class=p>:</span><span class=w> </span><span class=l>${{ secrets.ACTIONS_DEPLOY_KEY }}</span><span class=w>
+</span><span class=w>          </span><span class=nt>publish_branch</span><span class=p>:</span><span class=w> </span><span class=l>gh-pages </span><span class=w>
+</span><span class=w>          </span><span class=nt>publish_dir</span><span class=p>:</span><span class=w> </span><span class=l>./public</span><span class=w>
+</span></code></pre></div></li>
+</ul>
+</li>
+</ol>
+<p>这样配置之后，当提交修改到master分支后，就会触发这个workflow，然后自动的将<code>/public</code>目录内容发送到<code>gh-pages</code>分支</p>
+<h3 id=参考文档>参考文档</h3>
+<ul>
+<li><a href=https://gohugo.io/getting-started/quick-start/>Hugo</a></li>
+<li><a href=https://pages.github.com>GitHub Pages</a></li>
+<li><a href=https://gohugo.io/hosting-and-deployment/hosting-on-github/>Host on GitHub</a></li>
+<li><a href=https://github.com/marketplace/actions/github-pages-action#tips-and-faq>GitHub Action Deploy Key</a></li>
+<li><a href=https://www.markdown.xyz/basic-syntax/>Markdown语法</a></li>
+</ul>
+<div class=blog-tags>
+<a href=https://xyslion.github.io//tags/hugo/>hugo</a>&nbsp;
+<a href=https://xyslion.github.io//tags/blog/>blog</a>&nbsp;
+<a href=https://xyslion.github.io//tags/note/>note</a>&nbsp;
+</div>
+</article>
+<ul class="pager blog-pager">
+<li class=previous>
+<a href=https://xyslion.github.io/notes/k8s_apiserver_init/ data-toggle=tooltip data-placement=top title=Kubernetes源码分析之kube-apiserver>&larr; 前一篇</a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<footer>
+<div class=container>
+<div class=row>
+<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<ul class="list-inline text-center footer-links">
+<li>
+<a href=mailto:xiaoyulion@gmail.com title="Email me">
+<span class="fa-stack fa-lg">
+<i class="fas fa-circle fa-stack-2x"></i>
+<i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+</span>
+</a>
+</li>
+</ul>
+<p class="credits copyright text-muted">
+钰
+&nbsp;&bull;&nbsp;&copy;
+2021
+&nbsp;&bull;&nbsp;
+<a href=https://xyslion.github.io/>钰的笔记屋</a>
+</p>
+<p class="credits theme-by text-muted">
+由 <a href=https://gohugo.io>Hugo v0.90.1</a> 强力驱动 &nbsp;&bull;&nbsp; 主题 <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> 移植自 <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a>
+&nbsp;&bull;&nbsp;[<a href=29b8e7841dfea5e16bc136f357759cf175633ae6>29b8e784</a>]
+</p>
+</div>
+</div>
+</div>
+</footer><script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js integrity=sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js integrity=sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe crossorigin=anonymous></script>
+<script src=https://code.jquery.com/jquery-1.12.4.min.js integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin=anonymous></script>
+<script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js integrity=sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa crossorigin=anonymous></script>
+<script src=https://xyslion.github.io/js/main.js></script>
+<script src=https://xyslion.github.io/js/highlight.min.js></script>
+<script>hljs.initHighlightingOnLoad()</script>
+<script>$(document).ready(function(){$("pre.chroma").css("padding","0")})</script><script>renderMathInElement(document.body)</script><script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js integrity=sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js integrity=sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q crossorigin=anonymous></script><script src=https://xyslion.github.io/js/load-photoswipe.js></script>
+</body>
+</html>
